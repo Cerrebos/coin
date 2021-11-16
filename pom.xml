@@ -15,7 +15,7 @@
 	<name>coin</name>
 	<description>Coin</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>8</java.version>
 		<repackage.classifier/>
 		<spring-native.version>0.10.5</spring-native.version>
 	</properties>
@@ -80,6 +80,19 @@
 							<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
 						</env>
 					</image>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- Build an executable JAR -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>co.in.MainApplication</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
