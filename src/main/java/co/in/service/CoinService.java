@@ -1,9 +1,9 @@
-package co.in;
+package co.in.service;
 
 import co.in.entity.Pixel;
+import co.in.repository.PixelRepository;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.RestClients;
@@ -15,10 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,16 +25,12 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 @Service
 public class CoinService {
 
-    public static final String CODATI_URL           = "https://api.codati.ovh/pixels/?index=";
-    public static final String FOULOSCOPIE_URL      = "https://api-flag.fouloscopie.com/flag";
     public static final String FOULOSCOPIE_URL_PUT  = "https://api-flag.fouloscopie.com/pixel";
 
-    private final RestTemplate restTemplate;
     private final PixelRepository pixelRepository;
 
     @Autowired
-    public CoinService(RestTemplateBuilder builder, PixelRepository pixelRepository) {
-        this.restTemplate = builder.build();
+    public CoinService(PixelRepository pixelRepository) {
         this.pixelRepository = pixelRepository;
     }
 
@@ -61,7 +55,8 @@ public class CoinService {
             System.out.println(Instant.now().toString() + " Fouloscopie API returned " + exchange.getStatusCode() + " : updated pixel with id " + pixelId + " to color " + color);
             Thread.sleep(1000 * 63 * 2);
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -96,7 +91,7 @@ public class CoinService {
         return Stream.of(head1, head2, head3, beak1, beak2, torso1, torso2, torso3, torso4, papatte1, papatte2).collect(Collectors.toList());
     }
 
-    //TODO finish and test
+    //TODO finish and test get list of Pixel from remote open ES on 9200
     private List<Pixel> getPixelToChangeToMakeADuckFromRemoteDatabase(int xOfDuckHead, int yOfDuckHead, String url) {
         ClientConfiguration clientConfiguration = ClientConfiguration.builder().connectedTo(url).build();
         RestHighLevelClient highLevelClient = RestClients.create(clientConfiguration).rest();
@@ -140,27 +135,5 @@ public class CoinService {
     }
 
 
-
-    //////////////////////////////
-    //old method for import below
-    //////////////////////////////
-
-    public void generateEnrichedFlagData() {
-        List<Pixel> pixelsDataFromFouloscopie = Arrays.asList(restTemplate.getForObject(FOULOSCOPIE_URL, Pixel[].class));
-        System.out.println("Pixels number retrieved from Fouloscopie : " + pixelsDataFromFouloscopie.size());
-        pixelsDataFromFouloscopie.stream()
-                .map(this::enrichPixelWithCodatiData)
-                .forEach(pixelRepository::save);
-    }
-
-    private Pixel enrichPixelWithCodatiData(Pixel fouloscopiePixel) {
-        if (fouloscopiePixel.getIndexInFlag() > 1) {
-            Pixel pixel = restTemplate.getForObject(CODATI_URL + (fouloscopiePixel.getIndexInFlag() - 1), Pixel.class);
-            Objects.requireNonNull(pixel).setEntityId(fouloscopiePixel.getEntityId());
-            System.out.println("pixel treated for indexInFlag: " + pixel.getIndexInFlag());
-            return pixel;
-        }
-        return fouloscopiePixel;
-    }
 
 }

@@ -33,16 +33,4 @@ public class Pixel {
     @Field(type = FieldType.Keyword)
     String entityId;
 
-    @Override
-    public String toString() {
-        return "Pixel{" +
-                "index=" + index +
-                ", x=" + x +
-                ", y=" + y +
-                ", indexInFlag=" + indexInFlag +
-                ", hexColor='" + hexColor + '\'' +
-                ", author='" + author + '\'' +
-                ", pseudo='" + pseudo + '\'' +
-                '}';
-    }
 }

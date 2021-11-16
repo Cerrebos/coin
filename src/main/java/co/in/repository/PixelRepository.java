@@ -1,4 +1,4 @@
-package co.in;
+package co.in.repository;
 
 import co.in.entity.Pixel;
 import org.springframework.data.repository.CrudRepository;
