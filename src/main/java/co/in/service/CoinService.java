@@ -1,6 +1,8 @@
 package co.in.service;
 
 import co.in.entity.Pixel;
+import co.in.entity.PixelFromCSV;
+import co.in.repository.PixelFromCSVRepository;
 import co.in.repository.PixelRepository;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.http.*;
+import org.springframework.shell.standard.ShellComponent;
+import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,21 +26,22 @@ import java.util.stream.Stream;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
-@Service
+@ShellComponent
 public class CoinService {
 
     public static final String FOULOSCOPIE_URL_PUT  = "https://api-flag.fouloscopie.com/pixel";
 
-    private final PixelRepository pixelRepository;
+    private final PixelFromCSVRepository pixelRepository;
 
     @Autowired
-    public CoinService(PixelRepository pixelRepository) {
+    public CoinService(PixelFromCSVRepository pixelRepository) {
         this.pixelRepository = pixelRepository;
     }
 
-    public void runDuckGeneration(String sessionId, String ngrokUrl, int x, int y) {
+    @ShellMethod("dessine moi un canard")
+    public void coin(String sessionId, int x, int y) {
         getPixelToChangeToMakeADuck(x, y)
-                        .forEach(pixel ->  sendRequest(sessionId, pixel.getEntityId(), pixel.getHexColor()));
+                        .forEach(pixel ->  sendRequest(sessionId, pixel.getPixelId(), pixel.getColor()));
     }
 
     private void sendRequest(String sessionId, String pixelId, String color) {
@@ -61,38 +66,38 @@ public class CoinService {
     }
 
 
-    private List<Pixel> getPixelToChangeToMakeADuck(int XOfDuckHead, int YOfDuckHead) {
+    private List<PixelFromCSV> getPixelToChangeToMakeADuck(int XOfDuckHead, int YOfDuckHead) {
 
-        Pixel head1 = pixelRepository.findByXAndY(XOfDuckHead, YOfDuckHead);
-        Pixel head2 = pixelRepository.findByXAndY(XOfDuckHead + 1, YOfDuckHead);
-        Pixel head3 = pixelRepository.findByXAndY(XOfDuckHead, YOfDuckHead + 1);
-        Pixel beak1 = pixelRepository.findByXAndY(XOfDuckHead + 1, YOfDuckHead + 1);
-        Pixel beak2 = pixelRepository.findByXAndY(XOfDuckHead + 2, YOfDuckHead + 1);
-        Pixel torso1 = pixelRepository.findByXAndY(XOfDuckHead - 2, YOfDuckHead + 2);
-        Pixel torso2 = pixelRepository.findByXAndY(XOfDuckHead - 1, YOfDuckHead + 2);
-        Pixel torso3 = pixelRepository.findByXAndY(XOfDuckHead, YOfDuckHead + 2);
-        Pixel torso4 = pixelRepository.findByXAndY(XOfDuckHead + 1, YOfDuckHead + 2);
-        Pixel papatte1 = pixelRepository.findByXAndY(XOfDuckHead - 1, YOfDuckHead + 3);
-        Pixel papatte2 = pixelRepository.findByXAndY(XOfDuckHead, YOfDuckHead + 3);
+        PixelFromCSV head1 = pixelRepository.findByXposAndYpos(XOfDuckHead, YOfDuckHead);
+        PixelFromCSV head2 = pixelRepository.findByXposAndYpos(XOfDuckHead + 1, YOfDuckHead);
+        PixelFromCSV head3 = pixelRepository.findByXposAndYpos(XOfDuckHead, YOfDuckHead + 1);
+        PixelFromCSV beak1 = pixelRepository.findByXposAndYpos(XOfDuckHead + 1, YOfDuckHead + 1);
+        PixelFromCSV beak2 = pixelRepository.findByXposAndYpos(XOfDuckHead + 2, YOfDuckHead + 1);
+        PixelFromCSV torso1 = pixelRepository.findByXposAndYpos(XOfDuckHead - 2, YOfDuckHead + 2);
+        PixelFromCSV torso2 = pixelRepository.findByXposAndYpos(XOfDuckHead - 1, YOfDuckHead + 2);
+        PixelFromCSV torso3 = pixelRepository.findByXposAndYpos(XOfDuckHead, YOfDuckHead + 2);
+        PixelFromCSV torso4 = pixelRepository.findByXposAndYpos(XOfDuckHead + 1, YOfDuckHead + 2);
+        PixelFromCSV papatte1 = pixelRepository.findByXposAndYpos(XOfDuckHead - 1, YOfDuckHead + 3);
+        PixelFromCSV papatte2 = pixelRepository.findByXposAndYpos(XOfDuckHead, YOfDuckHead + 3);
 
-        head1.setHexColor("#FFEB3B");
-        head2.setHexColor("#FFEB3B");
-        head3.setHexColor("#FFEB3B");
-        torso1.setHexColor("#FFEB3B");
-        torso2.setHexColor("#FFEB3B");
-        torso3.setHexColor("#FFEB3B");
-        torso4.setHexColor("#FFEB3B");
-        papatte1.setHexColor("#FFEB3B");
-        papatte2.setHexColor("#FFEB3B");
+        head1.setColor("#FFEB3B");
+        head2.setColor("#FFEB3B");
+        head3.setColor("#FFEB3B");
+        torso1.setColor("#FFEB3B");
+        torso2.setColor("#FFEB3B");
+        torso3.setColor("#FFEB3B");
+        torso4.setColor("#FFEB3B");
+        papatte1.setColor("#FFEB3B");
+        papatte2.setColor("#FFEB3B");
 
-        beak1.setHexColor("#FF9800");
-        beak2.setHexColor("#FF9800");
+        beak1.setColor("#FF9800");
+        beak2.setColor("#FF9800");
 
         return Stream.of(head1, head2, head3, beak1, beak2, torso1, torso2, torso3, torso4, papatte1, papatte2).collect(Collectors.toList());
     }
 
-    //TODO finish and test get list of Pixel from remote open ES on 9200
-    private List<Pixel> getPixelToChangeToMakeADuckFromRemoteDatabase(int xOfDuckHead, int yOfDuckHead, String url) {
+    //TODO finish and test get list of PixelFromCSV from remote open ES on 9200
+    private List<PixelFromCSV> getPixelToChangeToMakeADuckFromRemoteDatabase(int xOfDuckHead, int yOfDuckHead, String url) {
         ClientConfiguration clientConfiguration = ClientConfiguration.builder().connectedTo(url).build();
         RestHighLevelClient highLevelClient = RestClients.create(clientConfiguration).rest();
 
@@ -105,31 +110,31 @@ public class CoinService {
                 .withPageable(PageRequest.of(0, 1))
                 .build();
 
-        Pixel head1 = elasticsearchRestTemplate.searchOne(build, Pixel.class).getContent();
+        PixelFromCSV head1 = elasticsearchRestTemplate.searchOne(build, PixelFromCSV.class).getContent();
 
-        Pixel head2 = pixelRepository.findByXAndY(xOfDuckHead + 1, yOfDuckHead);
-        Pixel head3 = pixelRepository.findByXAndY(xOfDuckHead, yOfDuckHead + 1);
-        Pixel beak1 = pixelRepository.findByXAndY(xOfDuckHead + 1, yOfDuckHead + 1);
-        Pixel beak2 = pixelRepository.findByXAndY(xOfDuckHead + 2, yOfDuckHead + 1);
-        Pixel torso1 = pixelRepository.findByXAndY(xOfDuckHead - 2, yOfDuckHead + 2);
-        Pixel torso2 = pixelRepository.findByXAndY(xOfDuckHead - 1, yOfDuckHead + 2);
-        Pixel torso3 = pixelRepository.findByXAndY(xOfDuckHead, yOfDuckHead + 2);
-        Pixel torso4 = pixelRepository.findByXAndY(xOfDuckHead + 1, yOfDuckHead + 2);
-        Pixel papatte1 = pixelRepository.findByXAndY(xOfDuckHead - 1, yOfDuckHead + 3);
-        Pixel papatte2 = pixelRepository.findByXAndY(xOfDuckHead, yOfDuckHead + 3);
+        PixelFromCSV head2 = pixelRepository.findByXposAndYpos(xOfDuckHead + 1, yOfDuckHead);
+        PixelFromCSV head3 = pixelRepository.findByXposAndYpos(xOfDuckHead, yOfDuckHead + 1);
+        PixelFromCSV beak1 = pixelRepository.findByXposAndYpos(xOfDuckHead + 1, yOfDuckHead + 1);
+        PixelFromCSV beak2 = pixelRepository.findByXposAndYpos(xOfDuckHead + 2, yOfDuckHead + 1);
+        PixelFromCSV torso1 = pixelRepository.findByXposAndYpos(xOfDuckHead - 2, yOfDuckHead + 2);
+        PixelFromCSV torso2 = pixelRepository.findByXposAndYpos(xOfDuckHead - 1, yOfDuckHead + 2);
+        PixelFromCSV torso3 = pixelRepository.findByXposAndYpos(xOfDuckHead, yOfDuckHead + 2);
+        PixelFromCSV torso4 = pixelRepository.findByXposAndYpos(xOfDuckHead + 1, yOfDuckHead + 2);
+        PixelFromCSV papatte1 = pixelRepository.findByXposAndYpos(xOfDuckHead - 1, yOfDuckHead + 3);
+        PixelFromCSV papatte2 = pixelRepository.findByXposAndYpos(xOfDuckHead, yOfDuckHead + 3);
 
-        head1.setHexColor("#FFEB3B");
-        head2.setHexColor("#FFEB3B");
-        head3.setHexColor("#FFEB3B");
-        torso1.setHexColor("#FFEB3B");
-        torso2.setHexColor("#FFEB3B");
-        torso3.setHexColor("#FFEB3B");
-        torso4.setHexColor("#FFEB3B");
-        papatte1.setHexColor("#FFEB3B");
-        papatte2.setHexColor("#FFEB3B");
+        head1.setColor("#FFEB3B");
+        head2.setColor("#FFEB3B");
+        head3.setColor("#FFEB3B");
+        torso1.setColor("#FFEB3B");
+        torso2.setColor("#FFEB3B");
+        torso3.setColor("#FFEB3B");
+        torso4.setColor("#FFEB3B");
+        papatte1.setColor("#FFEB3B");
+        papatte2.setColor("#FFEB3B");
 
-        beak1.setHexColor("#FF9800");
-        beak2.setHexColor("#FF9800");
+        beak1.setColor("#FF9800");
+        beak2.setColor("#FF9800");
 
         return Stream.of(head1, head2, head3, beak1, beak2, torso1, torso2, torso3, torso4, papatte1, papatte2).collect(Collectors.toList());
     }

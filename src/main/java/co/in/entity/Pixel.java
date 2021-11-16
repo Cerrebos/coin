@@ -19,11 +19,11 @@ public class Pixel {
     @Id
     int index;
     @Field(type = FieldType.Integer)
+    int indexInFlag;
+    @Field(type = FieldType.Integer)
     int x;
     @Field(type = FieldType.Integer)
     int y;
-    @Field(type = FieldType.Integer)
-    int indexInFlag;
     @Field(type = FieldType.Keyword)
     String hexColor;
     @Field(type = FieldType.Keyword)
