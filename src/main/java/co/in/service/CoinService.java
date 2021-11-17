@@ -58,10 +58,15 @@ public class CoinService {
         try {
             ResponseEntity<String> exchange = restTemplate.exchange(FOULOSCOPIE_URL_PUT, HttpMethod.PUT, entity, String.class);
             System.out.println(Instant.now().toString() + " Fouloscopie API returned " + exchange.getStatusCode() + " : updated pixel with id " + pixelId + " to color " + color);
-            Thread.sleep(1000 * 63 * 2);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
+        } finally {
+            try {
+                Thread.sleep(1000 * 63 * 2);
+            } catch (InterruptedException e) {
+                System.out.println("meh");
+            }
         }
     }
 
