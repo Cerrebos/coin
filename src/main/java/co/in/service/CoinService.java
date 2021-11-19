@@ -2,16 +2,15 @@ package co.in.service;
 
 import co.in.entity.Pixel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -50,8 +49,8 @@ public class CoinService {
         }
     }
 
-    public void drawOneImage(String sessionIdTextField, int positionX, int positionY) throws IOException {
-        List<Pixel> pixelsCoordinatesAndColorToChange = getPixelListFromImage().stream()
+    public void drawOneImage(String sessionIdTextField, int positionX, int positionY, File selectedFile) throws IOException {
+        List<Pixel> pixelsCoordinatesAndColorToChange = getPixelListFromImage(selectedFile).stream()
                 .peek(pixel -> {
                     pixel.setXpos(pixel.getXpos() + positionX);
                     pixel.setYpos(pixel.getYpos() + positionY);
@@ -169,10 +168,14 @@ public class CoinService {
     }
 
 
-    private List<Pixel> getPixelListFromImage() throws IOException
+    private List<Pixel> getPixelListFromImage(File file) throws IOException
     {
         // Load the image into memory
-        BufferedImage image = ImageIO.read(new ClassPathResource("amity.png").getFile());
+        if (file == null) {
+            file = new ClassPathResource("coin.png").getFile();
+        }
+
+        BufferedImage image = ImageIO.read(file);
 
         // Instantiate a pixel list that will contain the XY and colour of each non-empty pixel in the image
         List<Pixel> pixelList = new ArrayList<>();
