@@ -29,14 +29,14 @@ public class CoinFrame extends JFrame {
 
     private void initComponents() {
 
-        setSize(300, 400);
+        setSize(300, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Coin!");
 
         /////////Text fields
         JPanel group1 = new JPanel();
-        group1.setLayout(new GridLayout(7,3));
+        group1.setLayout(new GridLayout(12,3));
 
         sessionIdTextField = new JTextField();
         sessionIdTextField.setColumns(30);
@@ -64,9 +64,19 @@ public class CoinFrame extends JFrame {
         group1.add(color2TextField);
 
         JButton button = new JButton();
-        button.setText("Coin !");
+        button.setText("1 duck !");
         button.addActionListener(this::buttonActionPerformed);
         group1.add(button);
+
+        JButton buttonManyDuckRight = new JButton();
+        buttonManyDuckRight.setText("10 ducks ->!");
+        buttonManyDuckRight.addActionListener(this::buttonManyDuckRightActionPerformed);
+        group1.add(buttonManyDuckRight);
+
+        JButton buttonManyDuckLeft = new JButton();
+        buttonManyDuckLeft.setText("10 ducks <- !");
+        buttonManyDuckLeft.addActionListener(this::buttonManyDuckLeftActionPerformed);
+        group1.add(buttonManyDuckLeft);
 
         add(group1);
     }
@@ -79,7 +89,37 @@ public class CoinFrame extends JFrame {
                     color1TextField.getText() != null && !color1TextField.getText().isEmpty() &&
                     color2TextField.getText() != null && !color2TextField.getText().isEmpty()
             ) {
-                coinService.coin(sessionIdTextField.getText(), Integer.parseInt(positionXTextField.getText()), Integer.parseInt(positionYTextField.getText()), color1TextField.getText(), color2TextField.getText());
+                coinService.drawOneDuck(sessionIdTextField.getText(), Integer.parseInt(positionXTextField.getText()), Integer.parseInt(positionYTextField.getText()), color1TextField.getText(), color2TextField.getText());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void buttonManyDuckRightActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            if (sessionIdTextField.getText() != null && !sessionIdTextField.getText().isEmpty() &&
+                    positionXTextField.getText() != null && !positionXTextField.getText().isEmpty() &&
+                    positionYTextField.getText() != null && !positionYTextField.getText().isEmpty() &&
+                    color1TextField.getText() != null && !color1TextField.getText().isEmpty() &&
+                    color2TextField.getText() != null && !color2TextField.getText().isEmpty()
+            ) {
+                coinService.draw20DucksToTheRight(sessionIdTextField.getText(), Integer.parseInt(positionXTextField.getText()), Integer.parseInt(positionYTextField.getText()), color1TextField.getText(), color2TextField.getText());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void buttonManyDuckLeftActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            if (sessionIdTextField.getText() != null && !sessionIdTextField.getText().isEmpty() &&
+                    positionXTextField.getText() != null && !positionXTextField.getText().isEmpty() &&
+                    positionYTextField.getText() != null && !positionYTextField.getText().isEmpty() &&
+                    color1TextField.getText() != null && !color1TextField.getText().isEmpty() &&
+                    color2TextField.getText() != null && !color2TextField.getText().isEmpty()
+            ) {
+                coinService.draw20DucksToTheLeft(sessionIdTextField.getText(), Integer.parseInt(positionXTextField.getText()), Integer.parseInt(positionYTextField.getText()), color1TextField.getText(), color2TextField.getText());
             }
         } catch (IOException e) {
             e.printStackTrace();

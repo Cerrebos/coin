@@ -26,7 +26,21 @@ public class CoinService {
         this.importDataService = importDataService;
     }
 
-    public void coin(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2) throws IOException {
+    public void draw20DucksToTheRight(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2) throws IOException {
+        for (int i = 0; i < 10; i++) {
+            drawOneDuck(sessionIdTextField, positionXTextField, positionYTextField, color1, color2);
+            positionXTextField += 7;
+        }
+    }
+
+    public void draw20DucksToTheLeft(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2) throws IOException {
+        for (int i = 0; i < 10; i++) {
+            drawOneDuck(sessionIdTextField, positionXTextField, positionYTextField, color1, color2);
+            positionXTextField -= 7;
+        }
+    }
+
+    public void drawOneDuck(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2) throws IOException {
         getPixelToChangeToMakeADuck(positionXTextField, positionYTextField, color1, color2)
                         .forEach(pixel ->  sendRequest(sessionIdTextField, pixel.getPixelId(), pixel.getColor()));
     }
