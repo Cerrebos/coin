@@ -29,7 +29,7 @@ public class CoinFrame extends JFrame {
 
     private void initComponents() {
 
-        setSize(300, 200);
+        setSize(300, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Coin!");
@@ -53,15 +53,15 @@ public class CoinFrame extends JFrame {
         positionYTextField.setToolTipText("Pos Y (ex : 87");
         group1.add(positionYTextField);
 
-        positionYTextField = new JTextField();
-        sessionIdTextField.setColumns(30);
-        positionYTextField.setToolTipText("Couleur du corps du canard (ex : #FFFFFF )");
-        group1.add(positionYTextField);
+        color1TextField = new JTextField();
+        color1TextField.setColumns(30);
+        color1TextField.setToolTipText("Couleur du corps du canard (ex : #FFFFFF )");
+        group1.add(color1TextField);
 
-        positionYTextField = new JTextField();
-        sessionIdTextField.setColumns(30);
-        positionYTextField.setToolTipText("Couleur du bec (ex : #000000 )");
-        group1.add(positionYTextField);
+        color2TextField = new JTextField();
+        color2TextField.setColumns(30);
+        color2TextField.setToolTipText("Couleur du bec (ex : #000000 )");
+        group1.add(color2TextField);
 
         JButton button = new JButton();
         button.setText("Coin !");
