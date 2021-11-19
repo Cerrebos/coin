@@ -60,29 +60,30 @@ public class CoinService {
     private List<Pixel> getPixelToChangeToMakeADuck(int xOfDuckHead, int yOfDuckHead, String color1, String color2) throws IOException {
 
         return importDataService.getAllPixels().stream()
-                .filter(pixel -> (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead) ||
-                        (pixel.getXpos() == (xOfDuckHead + 1) && pixel.getYpos() == yOfDuckHead) ||
-                        (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead + 1) ||
-                        (pixel.getXpos() == (xOfDuckHead + 1) && pixel.getYpos() == yOfDuckHead + 1) ||
-                        (pixel.getXpos() == (xOfDuckHead + 2) && pixel.getYpos() == yOfDuckHead + 1) ||
-                        (pixel.getXpos() == (xOfDuckHead - 2) && pixel.getYpos() == yOfDuckHead + 2) ||
-                        (pixel.getXpos() == (xOfDuckHead - 1) && pixel.getYpos() == yOfDuckHead + 2) ||
-                        (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead + 2) ||
-                        (pixel.getXpos() == (xOfDuckHead + 1) && pixel.getYpos() == yOfDuckHead + 2) ||
-                        (pixel.getXpos() == (xOfDuckHead - 1) && pixel.getYpos() == yOfDuckHead + 3) ||
-                        (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead + 3))
+                .filter(pixel ->
+                        (pixel.getXpos() == (xOfDuckHead)       && pixel.getYpos() == yOfDuckHead)      ||
+                        (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead)      ||
+                        (pixel.getXpos() == (xOfDuckHead)       && pixel.getYpos() == yOfDuckHead + 1)  ||
+                        (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead + 1)  ||
+                        (pixel.getXpos() == (xOfDuckHead + 2)   && pixel.getYpos() == yOfDuckHead + 1)  ||
+                        (pixel.getXpos() == (xOfDuckHead - 2)   && pixel.getYpos() == yOfDuckHead + 2)  ||
+                        (pixel.getXpos() == (xOfDuckHead - 1)   && pixel.getYpos() == yOfDuckHead + 2)  ||
+                        (pixel.getXpos() == (xOfDuckHead)       && pixel.getYpos() == yOfDuckHead + 2)  ||
+                        (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead + 2)  ||
+                        (pixel.getXpos() == (xOfDuckHead - 1)   && pixel.getYpos() == yOfDuckHead + 3)  ||
+                        (pixel.getXpos() == (xOfDuckHead)       && pixel.getYpos() == yOfDuckHead + 3))
                 .peek(pixel -> {
-                    if (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead) pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead + 1) && pixel.getYpos() == yOfDuckHead)  pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead + 1) && pixel.getYpos() == yOfDuckHead + 1) pixel.setColor(color2);// color2
-                    if (pixel.getXpos() == (xOfDuckHead + 2) && pixel.getYpos() == yOfDuckHead + 1) pixel.setColor(color2);// color2
-                    if (pixel.getXpos() == (xOfDuckHead - 2) && pixel.getYpos() == yOfDuckHead + 2) pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead - 1) && pixel.getYpos() == yOfDuckHead + 2)pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead + 2)   pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead + 1) && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead - 1) && pixel.getYpos() == yOfDuckHead + 3)  pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead + 3)    pixel.setColor(color1);
+                    if (pixel.getXpos() == (xOfDuckHead)        && pixel.getYpos() == yOfDuckHead)      pixel.setColor(color1);
+                    if (pixel.getXpos() == (xOfDuckHead + 1)    && pixel.getYpos() == yOfDuckHead)      pixel.setColor(color1);
+                    if (pixel.getXpos() == (xOfDuckHead)        && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color1);
+                    if (pixel.getXpos() == (xOfDuckHead + 1)    && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color2);// color2
+                    if (pixel.getXpos() == (xOfDuckHead + 2)    && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color2);// color2
+                    if (pixel.getXpos() == (xOfDuckHead - 2)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+                    if (pixel.getXpos() == (xOfDuckHead - 1)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+                    if (pixel.getXpos() == (xOfDuckHead)        && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+                    if (pixel.getXpos() == (xOfDuckHead + 1)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+                    if (pixel.getXpos() == (xOfDuckHead - 1)    && pixel.getYpos() == yOfDuckHead + 3)  pixel.setColor(color1);
+                    if (pixel.getXpos() == (xOfDuckHead)        && pixel.getYpos() == yOfDuckHead + 3)  pixel.setColor(color1);
                 })
                 .collect(Collectors.toList());
     }
