@@ -69,12 +69,12 @@ public class CoinFrame extends JFrame {
         group1.add(button);
 
         JButton buttonManyDuckRight = new JButton();
-        buttonManyDuckRight.setText("10 ducks ->!");
+        buttonManyDuckRight.setText("20 ducks ->!");
         buttonManyDuckRight.addActionListener(this::buttonManyDuckRightActionPerformed);
         group1.add(buttonManyDuckRight);
 
         JButton buttonManyDuckLeft = new JButton();
-        buttonManyDuckLeft.setText("10 ducks <- !");
+        buttonManyDuckLeft.setText("20 ducks <- !");
         buttonManyDuckLeft.addActionListener(this::buttonManyDuckLeftActionPerformed);
         group1.add(buttonManyDuckLeft);
 
