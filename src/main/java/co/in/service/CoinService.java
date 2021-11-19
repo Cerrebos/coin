@@ -7,6 +7,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
@@ -18,17 +19,6 @@ public class CoinService {
 
     public static final String FOULOSCOPIE_URL_PUT  = "https://api-flag.fouloscopie.com/pixel";
 
-    @Value("${session}")
-    private String session;
-    @Value("${x}")
-    private int x;
-    @Value("${y}")
-    private int y;
-    @Value("${color1}")
-    private String color1;
-    @Value("${color2}")
-    private String color2;
-
     private ImportDataService importDataService;
 
     @Autowired
@@ -36,9 +26,9 @@ public class CoinService {
         this.importDataService = importDataService;
     }
 
-    public void coin() throws IOException {
-        getPixelToChangeToMakeADuck(x, y)
-                        .forEach(pixel ->  sendRequest(session, pixel.getPixelId(), pixel.getColor()));
+    public void coin(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2) throws IOException {
+        getPixelToChangeToMakeADuck(positionXTextField, positionYTextField, color1, color2)
+                        .forEach(pixel ->  sendRequest(sessionIdTextField, pixel.getPixelId(), pixel.getColor()));
     }
 
     private void sendRequest(String sessionId, String pixelId, String color) {
@@ -67,7 +57,7 @@ public class CoinService {
         }
     }
 
-    private List<Pixel> getPixelToChangeToMakeADuck(int xOfDuckHead, int yOfDuckHead) throws IOException {
+    private List<Pixel> getPixelToChangeToMakeADuck(int xOfDuckHead, int yOfDuckHead, String color1, String color2) throws IOException {
 
         return importDataService.getAllPixels().stream()
                 .filter(pixel -> (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead) ||
@@ -85,8 +75,8 @@ public class CoinService {
                     if (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead) pixel.setColor(color1);
                     if (pixel.getXpos() == (xOfDuckHead + 1) && pixel.getYpos() == yOfDuckHead)  pixel.setColor(color1);
                     if (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead + 1) && pixel.getYpos() == yOfDuckHead + 1) pixel.setColor(color1);// color2
-                    if (pixel.getXpos() == (xOfDuckHead + 2) && pixel.getYpos() == yOfDuckHead + 1) pixel.setColor(color1);// color2
+                    if (pixel.getXpos() == (xOfDuckHead + 1) && pixel.getYpos() == yOfDuckHead + 1) pixel.setColor(color2);// color2
+                    if (pixel.getXpos() == (xOfDuckHead + 2) && pixel.getYpos() == yOfDuckHead + 1) pixel.setColor(color2);// color2
                     if (pixel.getXpos() == (xOfDuckHead - 2) && pixel.getYpos() == yOfDuckHead + 2) pixel.setColor(color1);
                     if (pixel.getXpos() == (xOfDuckHead - 1) && pixel.getYpos() == yOfDuckHead + 2)pixel.setColor(color1);
                     if (pixel.getXpos() == (xOfDuckHead) && pixel.getYpos() == yOfDuckHead + 2)   pixel.setColor(color1);
