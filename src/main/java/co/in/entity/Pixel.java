@@ -1,36 +1,33 @@
 package co.in.entity;
 
+import com.opencsv.bean.CsvBindByName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(indexName = "pixel")
 public class Pixel {
 
-    @Id
+    @CsvBindByName
     int index;
-    @Field(type = FieldType.Integer)
+    @CsvBindByName
     int indexInFlag;
-    @Field(type = FieldType.Integer)
-    int x;
-    @Field(type = FieldType.Integer)
-    int y;
-    @Field(type = FieldType.Keyword)
-    String hexColor;
-    @Field(type = FieldType.Keyword)
+    @CsvBindByName
+    int xpos;
+    @CsvBindByName
+    int ypos;
+    @CsvBindByName
+    String color;
+    @CsvBindByName
     String author;
-    @Field(type = FieldType.Keyword)
+    @CsvBindByName
     String pseudo;
-    @Field(type = FieldType.Keyword)
-    String entityId;
+    @CsvBindByName
+    String pixelId;
+
 
 }
