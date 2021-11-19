@@ -26,6 +26,7 @@ public class CoinFrame extends JFrame {
     JTextField positionXTextField;
     JTextField color1TextField;
     JTextField color2TextField;
+    JCheckBox checkBox;
 
     private void initComponents() {
 
@@ -63,6 +64,9 @@ public class CoinFrame extends JFrame {
         color2TextField.setToolTipText("Couleur du bec (ex : #000000 )");
         group1.add(color2TextField);
 
+        checkBox = new JCheckBox("face à droite");
+        group1.add(checkBox);
+
         JButton button = new JButton();
         button.setText("1 duck !");
         button.addActionListener(this::buttonActionPerformed);
@@ -89,7 +93,7 @@ public class CoinFrame extends JFrame {
                     color1TextField.getText() != null && !color1TextField.getText().isEmpty() &&
                     color2TextField.getText() != null && !color2TextField.getText().isEmpty()
             ) {
-                coinService.drawOneDuck(sessionIdTextField.getText(), Integer.parseInt(positionXTextField.getText()), Integer.parseInt(positionYTextField.getText()), color1TextField.getText(), color2TextField.getText());
+                coinService.drawOneDuck(sessionIdTextField.getText(), Integer.parseInt(positionXTextField.getText()), Integer.parseInt(positionYTextField.getText()), color1TextField.getText(), color2TextField.getText(), checkBox.isSelected());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -104,7 +108,7 @@ public class CoinFrame extends JFrame {
                     color1TextField.getText() != null && !color1TextField.getText().isEmpty() &&
                     color2TextField.getText() != null && !color2TextField.getText().isEmpty()
             ) {
-                coinService.draw20DucksToTheRight(sessionIdTextField.getText(), Integer.parseInt(positionXTextField.getText()), Integer.parseInt(positionYTextField.getText()), color1TextField.getText(), color2TextField.getText());
+                coinService.draw20DucksToTheRight(sessionIdTextField.getText(), Integer.parseInt(positionXTextField.getText()), Integer.parseInt(positionYTextField.getText()), color1TextField.getText(), color2TextField.getText(), checkBox.isSelected());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -119,7 +123,7 @@ public class CoinFrame extends JFrame {
                     color1TextField.getText() != null && !color1TextField.getText().isEmpty() &&
                     color2TextField.getText() != null && !color2TextField.getText().isEmpty()
             ) {
-                coinService.draw20DucksToTheLeft(sessionIdTextField.getText(), Integer.parseInt(positionXTextField.getText()), Integer.parseInt(positionYTextField.getText()), color1TextField.getText(), color2TextField.getText());
+                coinService.draw20DucksToTheLeft(sessionIdTextField.getText(), Integer.parseInt(positionXTextField.getText()), Integer.parseInt(positionYTextField.getText()), color1TextField.getText(), color2TextField.getText(), checkBox.isSelected());
             }
         } catch (IOException e) {
             e.printStackTrace();

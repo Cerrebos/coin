@@ -26,22 +26,22 @@ public class CoinService {
         this.importDataService = importDataService;
     }
 
-    public void draw20DucksToTheRight(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2) throws IOException {
+    public void draw20DucksToTheRight(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2, boolean orientedRight) throws IOException {
         for (int i = 0; i < 10; i++) {
-            drawOneDuck(sessionIdTextField, positionXTextField, positionYTextField, color1, color2);
+            drawOneDuck(sessionIdTextField, positionXTextField, positionYTextField, color1, color2, orientedRight);
             positionXTextField += 7;
         }
     }
 
-    public void draw20DucksToTheLeft(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2) throws IOException {
+    public void draw20DucksToTheLeft(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2, boolean orientedRight) throws IOException {
         for (int i = 0; i < 10; i++) {
-            drawOneDuck(sessionIdTextField, positionXTextField, positionYTextField, color1, color2);
+            drawOneDuck(sessionIdTextField, positionXTextField, positionYTextField, color1, color2, orientedRight);
             positionXTextField -= 7;
         }
     }
 
-    public void drawOneDuck(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2) throws IOException {
-        getPixelToChangeToMakeADuck(positionXTextField, positionYTextField, color1, color2)
+    public void drawOneDuck(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2, boolean orientedRight) throws IOException {
+        getPixelToChangeToMakeADuck(positionXTextField, positionYTextField, color1, color2, orientedRight)
                         .forEach(pixel ->  sendRequest(sessionIdTextField, pixel.getPixelId(), pixel.getColor()));
     }
 
@@ -71,35 +71,74 @@ public class CoinService {
         }
     }
 
-    private List<Pixel> getPixelToChangeToMakeADuck(int xOfDuckHead, int yOfDuckHead, String color1, String color2) throws IOException {
+    private List<Pixel> getPixelToChangeToMakeADuck(int xOfDuckHead, int yOfDuckHead, String color1, String color2, boolean orientedRight) throws IOException {
 
         return importDataService.getAllPixels().stream()
-                .filter(pixel ->
-                        (pixel.getXpos() == (xOfDuckHead)       && pixel.getYpos() == yOfDuckHead)      ||
-                        (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead)      ||
-                        (pixel.getXpos() == (xOfDuckHead)       && pixel.getYpos() == yOfDuckHead + 1)  ||
-                        (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead + 1)  ||
-                        (pixel.getXpos() == (xOfDuckHead + 2)   && pixel.getYpos() == yOfDuckHead + 1)  ||
-                        (pixel.getXpos() == (xOfDuckHead - 2)   && pixel.getYpos() == yOfDuckHead + 2)  ||
-                        (pixel.getXpos() == (xOfDuckHead - 1)   && pixel.getYpos() == yOfDuckHead + 2)  ||
-                        (pixel.getXpos() == (xOfDuckHead)       && pixel.getYpos() == yOfDuckHead + 2)  ||
-                        (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead + 2)  ||
-                        (pixel.getXpos() == (xOfDuckHead - 1)   && pixel.getYpos() == yOfDuckHead + 3)  ||
-                        (pixel.getXpos() == (xOfDuckHead)       && pixel.getYpos() == yOfDuckHead + 3))
+                .filter(pixel -> orientedRight ? isPixelForDuckToTheRight(xOfDuckHead, yOfDuckHead, pixel) : isPixelForDuckToTheLeft(xOfDuckHead, yOfDuckHead, pixel))
                 .peek(pixel -> {
-                    if (pixel.getXpos() == (xOfDuckHead)        && pixel.getYpos() == yOfDuckHead)      pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead + 1)    && pixel.getYpos() == yOfDuckHead)      pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead)        && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead + 1)    && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color2);// color2
-                    if (pixel.getXpos() == (xOfDuckHead + 2)    && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color2);// color2
-                    if (pixel.getXpos() == (xOfDuckHead - 2)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead - 1)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead)        && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead + 1)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead - 1)    && pixel.getYpos() == yOfDuckHead + 3)  pixel.setColor(color1);
-                    if (pixel.getXpos() == (xOfDuckHead)        && pixel.getYpos() == yOfDuckHead + 3)  pixel.setColor(color1);
+                    if (orientedRight) {
+                        modifyColorForDuckToTheRight(xOfDuckHead, yOfDuckHead, color1, color2, pixel);
+                    } else {
+                        modifyColorForDuckToTheLeft(xOfDuckHead, yOfDuckHead, color1, color2, pixel);
+                    }
                 })
                 .collect(Collectors.toList());
+    }
+
+    private void modifyColorForDuckToTheLeft(int xOfDuckHead, int yOfDuckHead, String color1, String color2, Pixel pixel) {
+        if (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead)      pixel.setColor(color1);
+        if (pixel.getXpos() == (xOfDuckHead - 1)    && pixel.getYpos() == yOfDuckHead)      pixel.setColor(color1);
+        if (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color1);
+        if (pixel.getXpos() == (xOfDuckHead - 1)    && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color2);// color2
+        if (pixel.getXpos() == (xOfDuckHead - 2)    && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color2);// color2
+        if (pixel.getXpos() == (xOfDuckHead + 2)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+        if (pixel.getXpos() == (xOfDuckHead + 1)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+        if (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+        if (pixel.getXpos() == (xOfDuckHead - 1)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+        if (pixel.getXpos() == (xOfDuckHead + 1)    && pixel.getYpos() == yOfDuckHead + 3)  pixel.setColor(color1);
+        if (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 3)  pixel.setColor(color1);
+    }
+
+    private boolean isPixelForDuckToTheLeft(int xOfDuckHead, int yOfDuckHead, Pixel pixel) {
+        return (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead)      ||
+                (pixel.getXpos() == (xOfDuckHead - 1)   && pixel.getYpos() == yOfDuckHead)      ||
+                (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 1)  ||
+                (pixel.getXpos() == (xOfDuckHead - 1)   && pixel.getYpos() == yOfDuckHead + 1)  ||
+                (pixel.getXpos() == (xOfDuckHead - 2)   && pixel.getYpos() == yOfDuckHead + 1)  ||
+                (pixel.getXpos() == (xOfDuckHead + 2)   && pixel.getYpos() == yOfDuckHead + 2)  ||
+                (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead + 2)  ||
+                (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 2)  ||
+                (pixel.getXpos() == (xOfDuckHead - 1)   && pixel.getYpos() == yOfDuckHead + 2)  ||
+                (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead + 3)  ||
+                (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 3);
+    }
+
+    private void modifyColorForDuckToTheRight(int xOfDuckHead, int yOfDuckHead, String color1, String color2, Pixel pixel) {
+        if (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead)      pixel.setColor(color1);
+        if (pixel.getXpos() == (xOfDuckHead + 1)    && pixel.getYpos() == yOfDuckHead)      pixel.setColor(color1);
+        if (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color1);
+        if (pixel.getXpos() == (xOfDuckHead + 1)    && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color2);// color2
+        if (pixel.getXpos() == (xOfDuckHead + 2)    && pixel.getYpos() == yOfDuckHead + 1)  pixel.setColor(color2);// color2
+        if (pixel.getXpos() == (xOfDuckHead - 2)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+        if (pixel.getXpos() == (xOfDuckHead - 1)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+        if (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+        if (pixel.getXpos() == (xOfDuckHead + 1)    && pixel.getYpos() == yOfDuckHead + 2)  pixel.setColor(color1);
+        if (pixel.getXpos() == (xOfDuckHead - 1)    && pixel.getYpos() == yOfDuckHead + 3)  pixel.setColor(color1);
+        if (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 3)  pixel.setColor(color1);
+    }
+
+    private boolean isPixelForDuckToTheRight(int xOfDuckHead, int yOfDuckHead, Pixel pixel) {
+        return (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead)      ||
+                (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead)      ||
+                (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 1)  ||
+                (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead + 1)  ||
+                (pixel.getXpos() == (xOfDuckHead + 2)   && pixel.getYpos() == yOfDuckHead + 1)  ||
+                (pixel.getXpos() == (xOfDuckHead - 2)   && pixel.getYpos() == yOfDuckHead + 2)  ||
+                (pixel.getXpos() == (xOfDuckHead - 1)   && pixel.getYpos() == yOfDuckHead + 2)  ||
+                (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 2)  ||
+                (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead + 2)  ||
+                (pixel.getXpos() == (xOfDuckHead - 1)   && pixel.getYpos() == yOfDuckHead + 3)  ||
+                (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 3);
     }
 
 }
