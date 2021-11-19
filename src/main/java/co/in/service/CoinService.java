@@ -3,13 +3,18 @@ package co.in.service;
 import co.in.entity.Pixel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,22 +31,33 @@ public class CoinService {
         this.importDataService = importDataService;
     }
 
-    public void draw20DucksToTheRight(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2, boolean orientedRight) throws IOException {
+    public void drawOneDuck(String sessionId, int positionX, int positionY, String color1, String color2, boolean orientedRight) throws IOException {
+        getPixelToChangeToMakeADuck(positionX, positionY, color1, color2, orientedRight)
+                        .forEach(pixel ->  sendRequest(sessionId, pixel.getPixelId(), pixel.getColor()));
+    }
+
+    public void draw20DucksToTheRight(String sessionId, int positionX, int positionY, String color1, String color2, boolean orientedRight) throws IOException {
         for (int i = 0; i < 10; i++) {
-            drawOneDuck(sessionIdTextField, positionXTextField, positionYTextField, color1, color2, orientedRight);
-            positionXTextField += 7;
+            drawOneDuck(sessionId, positionX, positionY, color1, color2, orientedRight);
+            positionX += 7;
         }
     }
 
-    public void draw20DucksToTheLeft(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2, boolean orientedRight) throws IOException {
+    public void draw20DucksToTheLeft(String sessionId, int positionX, int positionY, String color1, String color2, boolean orientedRight) throws IOException {
         for (int i = 0; i < 10; i++) {
-            drawOneDuck(sessionIdTextField, positionXTextField, positionYTextField, color1, color2, orientedRight);
-            positionXTextField -= 7;
+            drawOneDuck(sessionId, positionX, positionY, color1, color2, orientedRight);
+            positionX -= 7;
         }
     }
 
-    public void drawOneDuck(String sessionIdTextField, int positionXTextField, int positionYTextField, String color1, String color2, boolean orientedRight) throws IOException {
-        getPixelToChangeToMakeADuck(positionXTextField, positionYTextField, color1, color2, orientedRight)
+    public void drawOneImage(String sessionIdTextField, int positionX, int positionY) throws IOException {
+        List<Pixel> pixelsCoordinatesAndColorToChange = getPixelListFromImage().stream()
+                .peek(pixel -> {
+                    pixel.setXpos(pixel.getXpos() + positionX);
+                    pixel.setYpos(pixel.getYpos() + positionY);
+                })
+                .collect(Collectors.toList());
+        getPixelToChangeToMakeAnImage(pixelsCoordinatesAndColorToChange)
                         .forEach(pixel ->  sendRequest(sessionIdTextField, pixel.getPixelId(), pixel.getColor()));
     }
 
@@ -82,6 +98,17 @@ public class CoinService {
                         modifyColorForDuckToTheLeft(xOfDuckHead, yOfDuckHead, color1, color2, pixel);
                     }
                 })
+                .collect(Collectors.toList());
+    }
+
+    private List<Pixel> getPixelToChangeToMakeAnImage(List<Pixel> pixelsCoordinatesAndColor) throws IOException {
+        return importDataService.getAllPixels().stream()
+                .filter(pixelsCoordinatesAndColor::contains)
+                .peek(completePixel ->
+                        pixelsCoordinatesAndColor.stream()
+                                .filter(p -> p.equals(completePixel))
+                                .findAny().ifPresent(p -> completePixel.setColor(p.getColor()))
+                )
                 .collect(Collectors.toList());
     }
 
@@ -139,6 +166,40 @@ public class CoinService {
                 (pixel.getXpos() == (xOfDuckHead + 1)   && pixel.getYpos() == yOfDuckHead + 2)  ||
                 (pixel.getXpos() == (xOfDuckHead - 1)   && pixel.getYpos() == yOfDuckHead + 3)  ||
                 (pixel.getXpos() == xOfDuckHead && pixel.getYpos() == yOfDuckHead + 3);
+    }
+
+
+    private List<Pixel> getPixelListFromImage() throws IOException
+    {
+        // Load the image into memory
+        BufferedImage image = ImageIO.read(new ClassPathResource("amity.png").getFile());
+
+        // Instantiate a pixel list that will contain the XY and colour of each non-empty pixel in the image
+        List<Pixel> pixelList = new ArrayList<>();
+        // Go through every pixel in the height*width space defined by the image
+        for(int y = 0 ; y < image.getHeight() ; y++)
+        {
+            for( int x = 0 ; x < image.getWidth() ; x++)
+            {
+                // Check if the pixel is transparent
+                if( image.getRGB(x,y)>>24 == 0x00)
+                    // If it is, then ignore it by going to the next iteration of the loop
+                    continue;
+
+                // Get the pixel colour information
+                Color pixelColor = new Color(image.getRGB(x, y));
+
+                // Add a pixel to the list with positions and colour specified, other fields left empty
+                pixelList.add(new Pixel(0, 0,
+                        // Positions = pixel coordinates in the image frame of reference
+                        x, y,
+                        // Colour = hex code built from the RGB values of the pixel
+                        String.format("#%02x%02x%02x", pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()),
+                        "", "", ""));
+            }
+        }
+
+        return pixelList;
     }
 
 }
