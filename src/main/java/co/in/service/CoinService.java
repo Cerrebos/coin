@@ -30,25 +30,6 @@ public class CoinService {
         this.importDataService = importDataService;
     }
 
-    public void drawOneDuck(String sessionId, int positionX, int positionY, String color1, String color2, boolean orientedRight) throws IOException {
-        getPixelToChangeToMakeADuck(positionX, positionY, color1, color2, orientedRight)
-                        .forEach(pixel ->  sendRequest(sessionId, pixel.getPixelId(), pixel.getColor()));
-    }
-
-    public void draw20DucksToTheRight(String sessionId, int positionX, int positionY, String color1, String color2, boolean orientedRight) throws IOException {
-        for (int i = 0; i < 10; i++) {
-            drawOneDuck(sessionId, positionX, positionY, color1, color2, orientedRight);
-            positionX += 7;
-        }
-    }
-
-    public void draw20DucksToTheLeft(String sessionId, int positionX, int positionY, String color1, String color2, boolean orientedRight) throws IOException {
-        for (int i = 0; i < 10; i++) {
-            drawOneDuck(sessionId, positionX, positionY, color1, color2, orientedRight);
-            positionX -= 7;
-        }
-    }
-
     public void drawOneImage(String sessionIdTextField, int positionX, int positionY, File selectedFile) throws IOException {
         List<Pixel> pixelsCoordinatesAndColorToChange = getPixelListFromImage(selectedFile).stream()
                 .peek(pixel -> {
@@ -84,20 +65,6 @@ public class CoinService {
                 System.out.println("ça n'a pas marché");
             }
         }
-    }
-
-    private List<Pixel> getPixelToChangeToMakeADuck(int xOfDuckHead, int yOfDuckHead, String color1, String color2, boolean orientedRight) throws IOException {
-
-        return importDataService.getAllPixels().stream()
-                .filter(pixel -> orientedRight ? isPixelForDuckToTheRight(xOfDuckHead, yOfDuckHead, pixel) : isPixelForDuckToTheLeft(xOfDuckHead, yOfDuckHead, pixel))
-                .peek(pixel -> {
-                    if (orientedRight) {
-                        modifyColorForDuckToTheRight(xOfDuckHead, yOfDuckHead, color1, color2, pixel);
-                    } else {
-                        modifyColorForDuckToTheLeft(xOfDuckHead, yOfDuckHead, color1, color2, pixel);
-                    }
-                })
-                .collect(Collectors.toList());
     }
 
     private List<Pixel> getPixelToChangeToMakeAnImage(List<Pixel> pixelsCoordinatesAndColor) throws IOException {
